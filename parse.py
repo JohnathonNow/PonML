@@ -1,5 +1,31 @@
 import ast
 
+scope = []
+
+def enter_scope():
+    global scope
+    scope += [set()]
+
+def exit_scope():
+    global scope
+    scope.pop()
+
+def check_reassignment(elements):
+    if len(elements) > 1:
+        return False
+    if isinstance(elements[0], ast.Name):
+        name = elements[0].id
+        ret = False
+        for ctx in scope:
+            if name in ctx:
+                ret = True
+        scope[-1].add(name)
+        return ret
+    return True
+
+def debug(element):
+    print(element, dir(element))
+
 def emit(text):
     print(text, end='')
 
@@ -16,35 +42,44 @@ def process(element):
         name = element.names[0].asname or path[-1]
         path = "/".join(path) + ".mini"
         emit(f'import: {name}("{path}")')
-    if isinstance(element, ast.Add):
-        emit(" + ")
-    if isinstance(element, ast.Import):
+    elif isinstance(element, ast.Import):
         path = element.names[0].name.split(".")
         name = element.names[0].asname or path[-1]
         path = "/".join(path) + ".mini"
         emit(f'import: {name}("{path}")')
-    if isinstance(element, ast.Name):
+    elif isinstance(element, ast.Add):
+        emit(" + ")
+    elif isinstance(element, ast.Name):
         emit(element.id)
-    if isinstance(element, ast.Constant):
+    elif isinstance(element, ast.Constant):
         emit(repr(element.value))
-    if isinstance(element, ast.Return):
+    elif isinstance(element, ast.Return):
         emit("ret ")
         process(element.value)
-    if isinstance(element, ast.BinOp):
+    elif isinstance(element, ast.BinOp):
         emit("(")
         process(element.left)
         process(element.op)
         process(element.right)
         emit(")")
-    if isinstance(element, ast.Expr):
+    elif isinstance(element, ast.Expr):
         process(element.value)
-    if isinstance(element, ast.Call):
+    elif isinstance(element, ast.Assign):
+        if not check_reassignment(element.targets):
+            emit("var ")
+        for i, n in enumerate(element.targets):
+            if i > 0:
+                emit(", ")
+            process(n)
+        emit(" = ")
+        process(element.value)
+    elif isinstance(element, ast.Call):
         emit("(")
         process(element.func)
         emit("(")
         process_body(element.args, False)
         emit("))")
-    if isinstance(element, ast.FunctionDef):
+    elif isinstance(element, ast.FunctionDef):
         name = element.name
         args = ", ".join([x.arg for x in element.args.args])
         emit(f'fun {name}({args}) do\n')
@@ -52,10 +87,12 @@ def process(element):
         emit(f'end\n')
 
 def process_body(body, newlines=True):
+    enter_scope()
     for element in body:
         process(element)
         if newlines:
             emit("\n")
+    exit_scope()
 
 if __name__ == '__main__':
     x = ast.parse("""
@@ -67,6 +104,12 @@ import z
 def bob(i):
     print('hi')
     print(1 + 2)
-    return 5
+    return i + 2
+
+def bob2():
+    x = 5
+    x = 6
+
+bob(20)
     """)
     process_body(x.body)
