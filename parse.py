@@ -1,3 +1,4 @@
+#!/bin/env python3
 import ast
 debugging = False
 
@@ -84,6 +85,9 @@ def process(element):
         process(element.op)
         process(element.right)
         emit(")")
+    elif isinstance(element, ast.Attribute):
+        process(element.value)
+        emit(":" + element.attr)
     elif isinstance(element, ast.Expr):
         process(element.value)
     elif isinstance(element, ast.Assign):
@@ -131,7 +135,7 @@ if __name__ == '__main__':
     p.add_argument('-f', '--file', required=False)
     p.add_argument('-d', '--debug', default=False, const=True, nargs='?')
     args = p.parse_args()
-    with open(args.file or "test.py", "r") as f:
+    with open(args.file or "examples/test.py", "r") as f:
         x = ast.parse(f.read())
     debugging = args.debug
     process_all(x.body)

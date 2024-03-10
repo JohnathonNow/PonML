@@ -16,3 +16,6 @@ bob(20)
 for i in range(1, 10):
     print(i)
     print(i * 5)
+
+
+z.bar()
