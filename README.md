@@ -3,15 +3,23 @@ A Python to Minilang transpiler
 
 Meant as an April Fools joke, takes Python and turns it into an equivalent [minilang](https://github.com/wrapl/minilang) script.
 
-Very early work in progress.
+Early work in progress.
 
-Planned to support:  
+Currently supports:  
 - Variables
-- Operators
 - For loops
+- Many operators
 - Functions
 - Function calls
-- Lists and maps
 - Strings, ints, and floats
+- Imports
+
+Planned to support:  
+- More operators (booleans, comparisons)
+- Lists and maps
 - fStrings
-- imports
+
+
+Resources:
+[Python AST](https://docs.python.org/3/library/ast.html)  
+[Minilang Docs](https://minilang.readthedocs.io/en/latest/)

@@ -1,4 +1,5 @@
 import ast
+debugging = False
 
 scope = []
 
@@ -27,9 +28,14 @@ def debug(element):
     print(element, dir(element))
 
 def emit(text):
+    if debugging:
+        return
     print(text, end='')
 
 def process(element):
+    if debugging:
+        debug(element)
+
     if isinstance(element, ast.ImportFrom):
         module = element.module
         if module:
@@ -47,12 +53,28 @@ def process(element):
         name = element.names[0].asname or path[-1]
         path = "/".join(path) + ".mini"
         emit(f'import: {name}("{path}")')
+    elif isinstance(element, ast.Mult):
+        emit(" * ")
+    elif isinstance(element, ast.Div):
+        emit(" / ")
+    elif isinstance(element, ast.Mod):
+        emit(" % ")
+    elif isinstance(element, ast.Pow):
+        emit(" ^ ")
     elif isinstance(element, ast.Add):
         emit(" + ")
     elif isinstance(element, ast.Name):
         emit(element.id)
     elif isinstance(element, ast.Constant):
         emit(repr(element.value))
+    elif isinstance(element, ast.For):
+        emit("for ")
+        process(element.target)
+        emit(" in ")
+        process(element.iter)
+        emit(" do\n")
+        process_body(element.body)
+        emit("end")
     elif isinstance(element, ast.Return):
         emit("ret ")
         process(element.value)
@@ -77,14 +99,17 @@ def process(element):
         emit("(")
         process(element.func)
         emit("(")
-        process_body(element.args, False)
+        for i, n in enumerate(element.args):
+            if i > 0:
+                emit(", ")
+            process(n)
         emit("))")
     elif isinstance(element, ast.FunctionDef):
         name = element.name
         args = ", ".join([x.arg for x in element.args.args])
         emit(f'fun {name}({args}) do\n')
         process_body(element.body)
-        emit(f'end\n')
+        emit(f'end')
 
 def process_body(body, newlines=True):
     enter_scope()
@@ -94,22 +119,19 @@ def process_body(body, newlines=True):
             emit("\n")
     exit_scope()
 
+def process_all(body):
+    emit("fun range(i, j, k) do if k then (i .. j by k) else (i .. j) end\n")
+
+    process_body(body)
 if __name__ == '__main__':
-    x = ast.parse("""
-import bob.x
-from z import y
-from .z import y
-from ..z import y
-import z
-def bob(i):
-    print('hi')
-    print(1 + 2)
-    return i + 2
-
-def bob2():
-    x = 5
-    x = 6
-
-bob(20)
-    """)
-    process_body(x.body)
+    import argparse
+    p = argparse.ArgumentParser(
+        prog='PonML',
+        description='Transpiles a subset of Python into minilang')
+    p.add_argument('-f', '--file', required=False)
+    p.add_argument('-d', '--debug', default=False, const=True, nargs='?')
+    args = p.parse_args()
+    with open(args.file or "test.py", "r") as f:
+        x = ast.parse(f.read())
+    debugging = args.debug
+    process_all(x.body)
