@@ -18,7 +18,13 @@ Planned to support:
 - More operators (booleans, comparisons)
 - Lists and maps
 - fStrings
+- try.. except...
+- Conditionals
+- While loops
 
+Not currently planned:  
+- Classes
+- Methods
 
 Resources:
 [Python AST](https://docs.python.org/3/library/ast.html)  
