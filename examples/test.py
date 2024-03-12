@@ -17,5 +17,14 @@ for i in range(1, 10):
     print(i)
     print(i * 5)
 
-
 z.bar()
+
+a = [1, 2, 3]
+a = {"a": 1, "b": 2, "c": 400}
+
+try:
+    pass
+except Exception as e:
+    pass
+except:
+    pass

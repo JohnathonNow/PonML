@@ -16,11 +16,11 @@ Currently supports:
 - Function calls
 - Strings, ints, and floats
 - Imports
+- try.. except...
 
 Planned to support:  
 - More operators (booleans, comparisons)
 - fStrings
-- try.. except...
 - Conditionals
 - While loops
 
@@ -40,7 +40,7 @@ from ..y import x
 ```
 becomes
 ```minilang
-fun range(i, j, k) do if k then (i .. j by k) else (i .. j) end
+fun range(i, j, k) do if k then (i ..< j by k) else (i ..< j) end end
 import: x("x.mini")
 import: x("y/x.mini")
 import: x("y/x.mini")
@@ -66,7 +66,7 @@ test('a', 'b', 'c')
 becomes
 
 ```minilang
-fun range(i, j, k) do if k then (i .. j by k) else (i .. j) end
+fun range(i, j, k) do if k then (i ..< j by k) else (i ..< j) end end
 fun test(a, b, c) do
 ret ((a + b) + c)
 end
@@ -89,12 +89,12 @@ print(x ** 2)
 becomes
 
 ```minilang
-fun range(i, j, k) do if k then (i .. j by k) else (i .. j) end
-var x = 10
+fun range(i, j, k) do if k then (i ..< j by k) else (i ..< j) end end
+var x := 10
 for i in (range(1, 10)) do
 (print((i * x)))
 end
-x = 20
+x := 20
 (print((x ^ 2)))
 ```
 

@@ -77,6 +77,18 @@ def process(element):
             emit(" is ")
             process(element.values[i])
         emit("}")
+    elif isinstance(element, ast.Pass):
+        emit('nil')
+    elif isinstance(element, ast.ExceptHandler):
+        emit("on ")
+        emit(element.name)
+        emit(" do \n")
+        process_body(element.body)
+        emit("end")
+    elif isinstance(element, ast.Try):
+        emit("do \n")
+        process_body(element.body)
+        process(element.handlers[0])
     elif isinstance(element, ast.List):
         emit("[")
         process_commas(element.elts)
@@ -107,7 +119,7 @@ def process(element):
         if not check_reassignment(element.targets):
             emit("var ")
         process_commas(element.targets)
-        emit(" = ")
+        emit(" := ")
         process(element.value)
     elif isinstance(element, ast.Call):
         emit("(")
@@ -138,7 +150,7 @@ def process_commas(body):
 
 
 def process_all(body):
-    emit("fun range(i, j, k) do if k then (i .. j by k) else (i .. j) end\n")
+    emit("fun range(i, j, k) do if k then (i ..< j by k) else (i ..< j) end end\n")
 
     process_body(body)
 if __name__ == '__main__':
@@ -153,3 +165,5 @@ if __name__ == '__main__':
         x = ast.parse(f.read())
     debugging = args.debug
     process_all(x.body)
+
+# vim: set expandtab ts=4 sw=4 :
