@@ -10,6 +10,7 @@ Early work in progress.
 Currently supports:  
 - Variables
 - For loops
+- Lists and maps
 - Many operators
 - Functions
 - Function calls
@@ -18,7 +19,6 @@ Currently supports:
 
 Planned to support:  
 - More operators (booleans, comparisons)
-- Lists and maps
 - fStrings
 - try.. except...
 - Conditionals

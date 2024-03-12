@@ -68,6 +68,19 @@ def process(element):
         emit(element.id)
     elif isinstance(element, ast.Constant):
         emit(repr(element.value))
+    elif isinstance(element, ast.Dict):
+        emit("{")
+        for i, n in enumerate(element.keys):
+            if i > 0:
+                emit(", ")
+            process(n)
+            emit(" is ")
+            process(element.values[i])
+        emit("}")
+    elif isinstance(element, ast.List):
+        emit("[")
+        process_commas(element.elts)
+        emit("]")
     elif isinstance(element, ast.For):
         emit("for ")
         process(element.target)
@@ -93,20 +106,14 @@ def process(element):
     elif isinstance(element, ast.Assign):
         if not check_reassignment(element.targets):
             emit("var ")
-        for i, n in enumerate(element.targets):
-            if i > 0:
-                emit(", ")
-            process(n)
+        process_commas(element.targets)
         emit(" = ")
         process(element.value)
     elif isinstance(element, ast.Call):
         emit("(")
         process(element.func)
         emit("(")
-        for i, n in enumerate(element.args):
-            if i > 0:
-                emit(", ")
-            process(n)
+        process_commas(element.args)
         emit("))")
     elif isinstance(element, ast.FunctionDef):
         name = element.name
@@ -122,6 +129,13 @@ def process_body(body, newlines=True):
         if newlines:
             emit("\n")
     exit_scope()
+
+def process_commas(body):
+    for i, n in enumerate(body):
+        if i > 0:
+            emit(", ")
+        process(n)
+
 
 def process_all(body):
     emit("fun range(i, j, k) do if k then (i .. j by k) else (i .. j) end\n")
