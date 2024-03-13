@@ -18,6 +18,7 @@ for i in range(1, 10):
     print(i * 5)
 
 z.bar()
+"bob".count()
 
 a = [1, 2, 3]
 a = {"a": 1, "b": 2, "c": 400}

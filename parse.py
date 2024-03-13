@@ -13,6 +13,17 @@ def exit_scope():
     global scope
     scope.pop()
 
+def is_defined(elements):
+    if len(elements) > 1:
+        return False
+    if isinstance(elements[0], ast.Name):
+        name = elements[0].id
+        for ctx in scope:
+            if name in ctx:
+                return True
+        return False
+    return True
+
 def check_reassignment(elements):
     if len(elements) > 1:
         return False
@@ -123,6 +134,9 @@ def process(element):
         emit(")")
     elif isinstance(element, ast.Attribute):
         process(element.value)
+        if not is_defined([element.value]):
+            # if it isn't a variable, it's probably an instance of something
+            emit(":")
         emit(":" + element.attr)
     elif isinstance(element, ast.Expr):
         process(element.value)
