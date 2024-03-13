@@ -17,10 +17,10 @@ Currently supports:
 - Strings, ints, and floats
 - Imports
 - try.. except...
+- fStrings
 
 Planned to support:  
 - More operators (booleans, comparisons)
-- fStrings
 - Conditionals
 - While loops
 

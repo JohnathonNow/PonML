@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 import ast
 debugging = False
 
@@ -66,6 +66,15 @@ def process(element):
         emit(" + ")
     elif isinstance(element, ast.Name):
         emit(element.id)
+    elif isinstance(element, ast.JoinedStr):
+        for i, n in enumerate(element.values):
+            if i > 0:
+                emit(" + ")
+            process(n)
+    elif isinstance(element, ast.FormattedValue):
+        emit("'{")
+        process(element.value)
+        emit("}'")
     elif isinstance(element, ast.Constant):
         emit(repr(element.value))
     elif isinstance(element, ast.Dict):
