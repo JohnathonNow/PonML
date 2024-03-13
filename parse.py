@@ -3,6 +3,7 @@ import ast
 debugging = False
 
 scope = []
+output = ""
 
 def enter_scope():
     global scope
@@ -29,9 +30,10 @@ def debug(element):
     print(element, dir(element))
 
 def emit(text):
+    global output
     if debugging:
         return
-    print(text, end='')
+    output += text
 
 def process(element):
     if debugging:
@@ -159,9 +161,15 @@ def process_commas(body):
 
 
 def process_all(body):
+    global output
+    output = ""
     emit("fun range(i, j, k) do if k then (i ..< j by k) else (i ..< j) end end\n")
-
     process_body(body)
+    return output
+
+def parse(text):
+    return process_all(ast.parse(text).body)
+
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser(
@@ -174,5 +182,6 @@ if __name__ == '__main__':
         x = ast.parse(f.read())
     debugging = args.debug
     process_all(x.body)
+    print(output)
 
 # vim: set expandtab ts=4 sw=4 :
