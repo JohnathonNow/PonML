@@ -25,9 +25,17 @@ a = {"a": 1, "b": 2, "c": 400}
 a = 4
 b = f'{a}""\'\''
 
+
 try:
     pass
 except Exception as e:
     pass
 except:
     pass
+
+if a and True or False:
+    print("1")
+elif False and False and False and False:
+    print("2")
+else:
+    print("3")

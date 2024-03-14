@@ -18,10 +18,10 @@ Currently supports:
 - Imports
 - try.. except...
 - fStrings
-
-Planned to support:  
 - More operators (booleans, comparisons)
 - Conditionals
+
+Planned to support:  
 - While loops
 
 No support planned:  

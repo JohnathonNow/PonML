@@ -152,6 +152,25 @@ def process(element):
         emit("(")
         process_commas(element.args)
         emit("))")
+    if isinstance(element, ast.And):
+        emit(" and ")
+    if isinstance(element, ast.Or):
+        emit(" or ")
+    elif isinstance(element, ast.BoolOp):
+        emit("(")
+        for i, n in enumerate(element.values):
+            if i > 0:
+                process(element.op)
+            process(n)
+        emit(")")
+    elif isinstance(element, ast.If):
+        emit("if ")
+        process(element.test)
+        emit(" then\n")
+        process_body(element.body)
+        emit("else\n")
+        process_body(element.orelse)
+        emit(" end")
     elif isinstance(element, ast.FunctionDef):
         name = element.name
         args = ", ".join([x.arg for x in element.args.args])
@@ -177,7 +196,7 @@ def process_commas(body):
 def process_all(body):
     global output
     output = ""
-    emit("fun range(i, j, k) do if k then (i ..< j by k) else (i ..< j) end end\n")
+    emit("fun range(i, j, k) do if k then (i ..< j by k) else (i ..< j) end end\ndef True := true\ndef False := false\n")
     process_body(body)
     return output
 
